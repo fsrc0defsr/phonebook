@@ -2,9 +2,17 @@ from .models import PhoneNumber
 from .serializers import PhoneNumberSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.decorators import permission_classes
 from xml.etree.ElementTree import Element, SubElement, tostring
 
+
+@permission_classes([IsAuthenticated])
 class PhoneNumberList(APIView):
+    authentication_classes = [BasicAuthentication]
+
     def get(self, request, format=None):
         phone_numbers = PhoneNumber.objects.all()
         data = PhoneNumberSerializer(phone_numbers, many=True).data

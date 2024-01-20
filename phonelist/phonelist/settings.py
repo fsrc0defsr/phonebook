@@ -26,7 +26,11 @@ SECRET_KEY = 'django-insecure-rdc=)5ii_)xvs%#txxc9(ga8v6fpi%4=ctt7rd#+u5orne*7dp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["localhost"]
+
+CSRF_TRUSTED_ORIGINS = ["https://localhost"]
+CSRF_ALLOWED_ORIGINS = ["https://localhost"]
+CORS_ORIGINS_WHITELIST = ["https://localhost"]
 
 
 # Application definition
@@ -62,7 +66,6 @@ REST_FRAMEWORK = {
         'rest_framework_xml.renderers.XMLRenderer',
     ],
 }
-
 
 ROOT_URLCONF = 'phonelist.urls'
 
@@ -130,7 +133,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR /"static"
+STATIC_URL = "/static/"
 
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"

@@ -1,7 +1,7 @@
 from django.db import models
 
 class PhoneNumber(models.Model):
-    id = models.AutoField(primary_key=True)  # или models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     Name = models.CharField(max_length=255)
     default_photo = models.ImageField(upload_to='photos/', null=True, blank=True)
     Phone1 = models.CharField(max_length=20)

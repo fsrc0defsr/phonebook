@@ -6,10 +6,11 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import permission_classes
-from xml.etree.ElementTree import Element, SubElement, tostring
+import xml.etree.ElementTree as ET
+import xml.dom.minidom
+from django.http import HttpResponse
 
-
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 class PhoneNumberList(APIView):
     authentication_classes = [BasicAuthentication]
 
@@ -17,18 +18,28 @@ class PhoneNumberList(APIView):
         phone_numbers = PhoneNumber.objects.all()
         data = PhoneNumberSerializer(phone_numbers, many=True).data
         xml_data = generate_xml(data)
-        return Response(xml_data, content_type='application/xml')
+        response = HttpResponse(xml_data, content_type='application/xml', charset='utf-8')
+        response['Content-Disposition'] = 'attachment; filename=phonebook.xml'
+        return response
 
 def generate_xml(data):
-    root = Element('YealinkIPPhonebook')
-    title = SubElement(root, 'Title')
+    root = ET.Element('YealinkIPPhoneBook')
+    title = ET.SubElement(root, 'Title')
     title.text = 'Yealink'
 
-    menu = SubElement(root, 'Menu', Name='Справочник')
+    menu = ET.SubElement(root, 'Menu', Name='Справочник')
 
     for item in data:
-        unit = SubElement(menu, 'Unit', Name=item['Name'], default_photo='Resource:', Phone3=str(item['Phone3']), Phone2=str(item['Phone2']), Phone1=str(item['Phone1']))
-
-    xml_string = '<?xml version="1.0" encoding="UTF-8"?>\n' + tostring(root, encoding='utf-8').decode('utf-8').replace('><', '>\n\t<').replace('><', '><')
-
-    return xml_string
+        unit = ET.SubElement(
+            menu,
+            'Unit',
+            Name=str(item['Name']),
+            default_photo='Resource:',
+            Phone3=str(item['Phone3']),
+            Phone2=str(item['Phone2']),
+            Phone1=str(item['Phone1'])
+        )
+    
+    xml_string = ET.tostring(root, encoding='utf-8')
+    xml_data = xml.dom.minidom.parseString(xml_string).toprettyxml(indent="    ", encoding='utf-8')
+    return xml_data
